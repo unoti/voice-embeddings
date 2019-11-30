@@ -1,6 +1,7 @@
-import config
+from triplet_loss import deep_speaker_loss
 
 import math
+import keras.backend as K
 from keras import layers
 from keras import regularizers
 from keras.layers import Input
@@ -73,8 +74,16 @@ def cnn_component(inp):
     #x_ = conv_and_res_block(x_, 512, stage=4) # This is the difference between the simple and complex model.
     return x_
 
-def convolutional_model_simple(input_shape=(NUM_FRAMES,64, 1),    #input_shape(32,32,3)
-                        batch_size=BATCH_SIZE * TRIPLETS_PER_BATCH , num_frames=NUM_FRAMES):
+def convolutional_model_simple(input_shape, batch_size, num_frames, embedding_length):
+    """
+    Builds a convolutional model that holds and entire batch of processed sound samples.
+    input_shape: (NUM_FRAMES, NUM_FILTERS, 1)
+    batch_size: (BATCH_SIZE * TRIPLETS_PER_BATCH)
+    num_frames: Number of audio frames from config = 160 (=4sec because a frame is 25ms)
+    embedding_length: number of features (floating point numbers) per output embedding.
+    Returns: A compiled keras model.
+    """
+    # 
     # http://cs231n.github.io/convolutional-networks/
     # conv weights
     # #params = ks * ks * nb_filters * num_channels_input
@@ -92,23 +101,29 @@ def convolutional_model_simple(input_shape=(NUM_FRAMES,64, 1),    #input_shape(3
     # num_frames = K.shape() - do it dynamically after.
 
 
-    inputs = Input(shape=input_shape)  # TODO the network should be definable without explicit batch shape
+    inputs = Input(shape=input_shape)
     x = cnn_component(inputs)  # .shape = (BATCH_SIZE , num_frames/8, 64/8, 512)
+    # -1 in the target size means that the number of dimensions in that axis will be inferred.
+    # So this resize means: (n, num_frames/8, 2048)
     x = Lambda(lambda y: K.reshape(y, (-1, math.ceil(num_frames / 8), 2048)), name='reshape')(x)
-    x = Lambda(lambda y: K.mean(y, axis=1), name='average')(x)  #shape = (BATCH_SIZE, 512)
-    x = Dense(config.EMBEDDING_LENGTH, name='affine')(x)  # .shape = (BATCH_SIZE , 512)
+    # Compute the average over all of the frames within a sample.
+    x = Lambda(lambda y: K.mean(y, axis=1), name='average')(x)  # .shape = (BATCH_SIZE, embedding_length)
+    x = Dense(embedding_length, name='affine')(x)  # .shape = (BATCH_SIZE , embedding_length)
     x = Lambda(lambda y: K.l2_normalize(y, axis=1), name='ln')(x)
 
     model = Model(inputs, x, name='convolutional')
+    model.compile(optimized='adam', loss=deep_speaker_loss)
     return model
 
-def make_model():
-    batch_size = config.BATCH_SIZE * TRIPLETS_PER_BATCH
+def make_model(batch_size, embedding_length, num_frames, num_filters):
+    batch_size = batch_size * TRIPLETS_PER_BATCH
     # TODO: document exactly what's happening with the shape here.
-    x, y = batch.to_inputs()
-    b = x[0]
-    num_frames = b.shape[0]
-    input_shape = (num_frames, b.shape[1], b.shape[2])
+    # [x] Become very certain what the shapes of x are coming out of batch.to_inputs() line 66 train.py
+    # [x] make minibatch.X be of shape (batchsize, num_frames, 64, 1) <-- that's x shape. 
+    #       then input_shape = (num_frames, 64, 1)
+    # Shape of a single sample
+    input_shape = (num_frames, num_filters, 1)
     print('make_model input shape=',input_shape)
-    model = convolutional_model_simple(input_shape=input_shape, batch_size=batch_size, num_frames=num_frames)
+    model = convolutional_model_simple(input_shape, batch_size, num_frames, embedding_length)
     model.compile(optimizer='adam', loss=deep_speaker_loss)
+    return model

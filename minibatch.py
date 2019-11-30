@@ -15,13 +15,13 @@ class MiniBatch:
         samples: A list of audio samples. Each sample is of shape (num_frames, num_filters, 1).
         speaker_ids: The speaker id for each sample in **samples**.
         """
-        self.X = samples
-        self.Y = speaker_ids
+        self.X = np.array(samples)
+        self.Y = np.array(speaker_ids)
 
     def inputs(self):
         """
         Returns (X, Y)
-        X: A tensor of shape (batch_size, num_frames, num_filter_banks=64, 1)
+        X: A tensor of shape (batch_size * 3, num_frames=160, num_filter_banks=64, 1)
         Y: The speaker id of each sample in X.
         """
         return self.X, self.Y
@@ -76,5 +76,4 @@ def create_batch(db: SpeakerDatabase) -> MiniBatch:
     batch_ids.extend(anchor_ids) # Anchor ids.
     batch_ids.extend(anchor_ids) # Positive ids, which are the same as the anchor ids.
     batch_ids.extend(negative_ids) # Negative ids
-
     return MiniBatch(batch, batch_ids)
