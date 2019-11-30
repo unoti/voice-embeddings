@@ -1,11 +1,12 @@
 import os
 import random
 
+
 class SpeakerDatabase:
     """A dataset of audio files from various speakers.
     The directory structure of the data is one directory per speaker, with the speaker id as the name
     of the directory.
-    Under the speaker directory multiple directories, each containing audio clips from that speaker.
+    Under the speaker directory are multiple directories, each containing audio clips from that speaker.
     """
     def __init__(self, directory):
         """
@@ -40,12 +41,14 @@ class SpeakerDatabase:
     
     def random_triplet(self):
         """Selects a triplet of audio samples. Two from the same speaker, and one from a different speaker.
-        Returns filenames: anchor, positive, negative.
+        Returns (anchor_fnam, positive_fnam, negative_fnam, anchor_id, negative_id)
+        Returns filenames: (anchor, positive, negative).
         anchor: A wav filename with an audio sample for the "anchor" speaker, which will match the positive example.
         positive: A wave filename with an audio sample for the "positive" speaker, which is from the same speaker as the anchor.
         negative: A wave filename with an audio sample from a different speaker from the anchor.
         """
         anchor_id, anchor_wav = self.random_wav()
+        negative_id = None, None # Will be set below.
         while True:
             positive_wav = self.random_wav_for_speaker(anchor_id)
             if positive_wav != anchor_wav:
@@ -54,4 +57,4 @@ class SpeakerDatabase:
             negative_id, negative_wav = self.random_wav()
             if negative_id != anchor_id:
                 break
-        return anchor_wav, positive_wav, negative_wav
+        return anchor_wav, positive_wav, negative_wav, anchor_id, negative_id
