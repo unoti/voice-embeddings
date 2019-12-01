@@ -1,11 +1,16 @@
 import config
 
-from triplet_loss import deep_speaker_loss
 import keras.backend as K
 
 def batch_cosine_similarity(x1, x2):
     # https://en.wikipedia.org/wiki/Cosine_similarity
     # 1 = equal direction ; -1 = opposite direction
+    # https://keras.io/backend/#squeeze
+    # https://keras.io/backend/#batch_dot
+    # Calculate the dot product for the entire batch, where the input batch
+    # is shaped like (batch_size, :).  Result size has fewer dimensions than the
+    # input but is expanded to have at least 2 dimensions.  Then we squeeze that
+    # removing one dimension.
     dot = K.squeeze(K.batch_dot(x1, x2, axes=1), axis=1)
     return dot
 

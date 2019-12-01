@@ -22,6 +22,8 @@ class MiniBatch:
         """
         Returns (X, Y)
         X: A tensor of shape (batch_size * 3, num_frames=160, num_filter_banks=64, 1)
+           With our default config: batch_size=32, num_frames=160, num_filter_banks=64.
+           So the default shape of X is (96, 160, 64, 1).
         Y: The speaker id of each sample in X.
         """
         return self.X, self.Y

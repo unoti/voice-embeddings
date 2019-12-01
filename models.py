@@ -6,6 +6,7 @@ from keras import layers
 from keras import regularizers
 from keras.layers import Input
 from keras.layers.normalization import BatchNormalization
+from keras.layers.convolutional import Conv2D
 from keras.layers.core import Lambda, Dense
 from keras.models import Model
 
@@ -81,7 +82,7 @@ def convolutional_model_simple(input_shape, batch_size, num_frames, embedding_le
     batch_size: (BATCH_SIZE * TRIPLETS_PER_BATCH)
     num_frames: Number of audio frames from config = 160 (=4sec because a frame is 25ms)
     embedding_length: number of features (floating point numbers) per output embedding.
-    Returns: A compiled keras model.
+    Returns: An uncompiled keras model.
     """
     # 
     # http://cs231n.github.io/convolutional-networks/
@@ -112,7 +113,6 @@ def convolutional_model_simple(input_shape, batch_size, num_frames, embedding_le
     x = Lambda(lambda y: K.l2_normalize(y, axis=1), name='ln')(x)
 
     model = Model(inputs, x, name='convolutional')
-    model.compile(optimized='adam', loss=deep_speaker_loss)
     return model
 
 def make_model(batch_size, embedding_length, num_frames, num_filters):

@@ -37,6 +37,9 @@ Audio processing using deep neural networks. Speaker identification using voice 
 Right now I'm a bit hazy on how the loss function works, and what the shapes of the inputs to the model are.
 Looking at the loss function, it looks to me like it returns a single number.  But it looks to me like the model
 contains many triplets.  So I need to gain crystal clarity on the following issues:
- * what are the shapes of the inputs in the model
+ * what are the shapes of the inputs in the model?
  * what's the purpose of that resize with a 2048, and the /16 in there?
- * How does the loss function work with multiple samples? I mean, I understand how triplet loss works, but what's going on in their code?  Does that code I'm referring to even work? Consider comparing it to the original philipperemy code.
+ * **How does the loss function work with multiple samples?**
+   It computes the loss among all the triplets then reduces it down to a single scalar value reflecting the
+   total loss across the entire batch.  Then that gets optimized to minimum.
+
