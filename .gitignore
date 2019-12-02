@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+# We'll add the checkpoints back into the repo later, but for now these udpates are too huge.
+checkpoints/*
 
 # C extensions
 *.so

@@ -7,7 +7,7 @@ DATASET_TRAINING_DIR = r'd:\datasets\voxceleb1\vox1\wav' # Training dataset.
 
 # ----------
 # Things you could safely change
-CHECKPOINT_SECONDS = 100 # Save the model after processing every n seconds.
+CHECKPOINT_SECONDS = 600 # Save the model after processing every n seconds.
 CHECKPOINT_DIRECTORY = 'checkpoints' # Directory to save models during training.
 
 # ----------
