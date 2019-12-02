@@ -46,6 +46,7 @@ class CheckpointMonitor:
 
         for line in self._csv_updates:
             self._csv_file.write(line + '\n')
+        self._csv_updates = []            
         self._csv_file.flush()
 
         self._reset_checkpoint_time()
