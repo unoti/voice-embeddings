@@ -7,24 +7,41 @@
 
 import config
 from checkpoint import CheckpointMonitor
+import minibatch
 import models
 from speakerdb import SpeakerDatabase
-
 
 import keras.models
 import os
 from tensorflow.python.util import deprecation
 import tensorflow as tf
 
+# Singletons
+_speaker_db = None
+
 def make_speaker_db() -> SpeakerDatabase:
-    return SpeakerDatabase(config.DATASET_TRAINING_DIR)
+    global _speaker_db
+    if not _speaker_db:
+        _speaker_db = SpeakerDatabase(config.DATASET_TRAINING_DIR)
+    return _speaker_db
 
 def make_model() -> keras.models.Model:
+    """Returns an untrained model."""
     return models.make_model(config.BATCH_SIZE, config.EMBEDDING_LENGTH, config.NUM_FRAMES, config.NUM_FILTERS)
+
+def load_model() -> keras.models.Model:
+    model = make_model()
+    checkpoint_monitor = make_checkpoint_monitor(model)
+    checkpoint_monitor.load_most_recent()
+    return model
 
 def make_checkpoint_monitor(model: keras.models.Model) -> CheckpointMonitor:
     return CheckpointMonitor(model, directory=config.CHECKPOINT_DIRECTORY, base_name='voice-embeddings',
         seconds_between_saves=config.CHECKPOINT_SECONDS, log_fn=log)
+
+def make_batch() -> minibatch.MiniBatch:
+    make_speaker_db()
+    return minibatch.create_batch(_speaker_db)
 
 def log(*items):
     print(*items)

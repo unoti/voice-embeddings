@@ -1,5 +1,6 @@
 from triplet_loss import deep_speaker_loss
 
+import numpy as np
 import math
 import keras.backend as K
 from keras import layers
@@ -123,7 +124,18 @@ def make_model(batch_size, embedding_length, num_frames, num_filters):
     #       then input_shape = (num_frames, 64, 1)
     # Shape of a single sample
     input_shape = (num_frames, num_filters, 1)
-    print('make_model input shape=',input_shape)
     model = convolutional_model_simple(input_shape, batch_size, num_frames, embedding_length)
     model.compile(optimizer='adam', loss=deep_speaker_loss)
     return model
+
+def get_embedding(model, sample):
+    """
+    sample: A sample of shape (NUM_FRAMES, NUM_FILTERS, 1) which is (160,64,1).
+        You can get this by using something like batch.X[n].
+    model: a model.
+    returns: an array of shape (NUM_EMBEDDING_LENGTH,) with the embeddings for this speaker.
+    """
+    input_batch = np.expand_dims(sample, axis=0) # .predict() wants a batch, not a single entry.
+    emb_rows = model.predict(input_batch) # Predict for this batch of 1.
+    embedding = np.squeeze(emb_rows) # Predict() returns a batch of results. Extract the single row.
+    return embedding

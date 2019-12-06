@@ -29,7 +29,10 @@ def graph_spectrogram(wav_file):
 
 def graph_audio(wav_file):
     """Plots 2 graphs for an audio file: an amplitude graph, and a spectrogram."""
-    rate, samples = get_wav_info(wav_file)
+    rate, samples = load_wav(wav_file)
+    graph_raw_audio(samples)
+
+def graph_raw_audio(samples):
     plt.figure(1)    
     a = plt.subplot(211)    
     a.set_xlabel('time [s]')
