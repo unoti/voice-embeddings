@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import random
+import wave
 from python_speech_features import fbank
 
 def load_wav(wav_file):
@@ -13,6 +14,17 @@ def load_wav(wav_file):
     """
     rate, data = wavfile.read(wav_file)
     return rate, data
+
+def save_wav(filename, samples, rate=16000, width=2, channels=1):
+    """Save a wav file.
+    samples: an iterable such as a numpy array where each item is a number of size width bytes.
+    """
+    wav = wave.open(filename, 'wb')
+    wav.setnchannels(channels)
+    wav.setsampwidth(width)
+    wav.setframerate(rate)
+    wav.writeframes(samples)
+    wav.close()
 
 def graph_spectrogram(wav_file):
     """Plots a spectrogram for a wav audio file."""
