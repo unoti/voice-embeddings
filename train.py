@@ -24,6 +24,7 @@ def train():
     checkpoint_monitor = application.make_checkpoint_monitor(model)
     checkpoint_monitor.load_most_recent()
     batch_num = checkpoint_monitor.batch_num # Restored from the csv file.
+    #log('Model learning rate set to %f' % model.lr.get_value())
     
     log('Building speaker db')
     speaker_db = application.make_speaker_db()

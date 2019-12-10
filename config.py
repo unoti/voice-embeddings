@@ -4,6 +4,9 @@
 # Dataset format: one directory for each speaker where the speaker id is the name of the directory.
 # Under that is many folders containing wav files for that speaker.
 DATASET_TRAINING_DIR = r'd:\datasets\voxceleb1\vox1\wav' # Training dataset.
+# You should start the learning rate at 0.001.
+# I'm setting it down once we're levelling off around epoch 42000.
+LEARNING_RATE = 0.0001
 
 # ----------
 # Things you could safely change

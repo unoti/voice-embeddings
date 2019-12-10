@@ -5,6 +5,7 @@ import math
 import keras.backend as K
 from keras import layers
 from keras import regularizers
+import keras.optimizers
 from keras.layers import Input
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Conv2D
@@ -116,7 +117,7 @@ def convolutional_model_simple(input_shape, batch_size, num_frames, embedding_le
     model = Model(inputs, x, name='convolutional')
     return model
 
-def make_model(batch_size, embedding_length, num_frames, num_filters):
+def make_model(batch_size, embedding_length, num_frames, num_filters, learning_rate):
     batch_size = batch_size * TRIPLETS_PER_BATCH
     # TODO: document exactly what's happening with the shape here.
     # [x] Become very certain what the shapes of x are coming out of batch.to_inputs() line 66 train.py
@@ -125,7 +126,8 @@ def make_model(batch_size, embedding_length, num_frames, num_filters):
     # Shape of a single sample
     input_shape = (num_frames, num_filters, 1)
     model = convolutional_model_simple(input_shape, batch_size, num_frames, embedding_length)
-    model.compile(optimizer='adam', loss=deep_speaker_loss)
+    adam = keras.optimizers.Adam(lr=learning_rate)
+    model.compile(optimizer=adam, loss=deep_speaker_loss)
     return model
 
 def get_embedding(model, sample):

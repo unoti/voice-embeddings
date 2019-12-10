@@ -27,7 +27,9 @@ def make_speaker_db() -> SpeakerDatabase:
 
 def make_model() -> keras.models.Model:
     """Returns an untrained model."""
-    return models.make_model(config.BATCH_SIZE, config.EMBEDDING_LENGTH, config.NUM_FRAMES, config.NUM_FILTERS)
+    model = models.make_model(config.BATCH_SIZE, config.EMBEDDING_LENGTH,
+        config.NUM_FRAMES, config.NUM_FILTERS, config.LEARNING_RATE)
+    return model
 
 def load_model() -> keras.models.Model:
     model = make_model()
