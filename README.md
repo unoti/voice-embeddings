@@ -32,14 +32,22 @@ Audio processing using deep neural networks. Speaker identification using voice 
  * The shape of the output is ```config.EMBEDDING_LENGTH=512```.
 
 
-## Next steps
+## Recently Completed Tasks
 **Get the model built**. Become very certain about what the inputs are to the model, and how the model trains.
 Right now I'm a bit hazy on how the loss function works, and what the shapes of the inputs to the model are.
 Looking at the loss function, it looks to me like it returns a single number.  But it looks to me like the model
 contains many triplets.  So I need to gain crystal clarity on the following issues:
- * what are the shapes of the inputs in the model?
- * what's the purpose of that resize with a 2048, and the /16 in there?
+ * what are the shapes of the inputs in the model? *done, and documented*
+ * what's the purpose of that resize with a 2048, and the /16 in there? *done, and documented*
  * **How does the loss function work with multiple samples?**
    It computes the loss among all the triplets then reduces it down to a single scalar value reflecting the
    total loss across the entire batch.  Then that gets optimized to minimum.
+**Train and test the model**
+
+## Next Steps
+ * **Install a voice activity detector**. Detect when there's voice activity.  Don't fill the buffer when there's no activity.
+ * **Create a timeline** of whether there's voice activity, and the embedding for that time slice
+ * **Speaker diarization** will probably be done in a separate repository.
+ * **Speaker diaraization UI** will probably be done in a separate repository.
+ * **Clean up requirements.txt** Had a problem trying to use pre-trained weights on another machine that had a different version of Keras and Tensorflow, so I added requirements.txt.  Now github is registering a security vulnerability on a version of PyCypto that I'm not actually using.  Need to pare down the requirements.txt to just the things actually in use and install on a clean virtualenv.
 
